@@ -3,7 +3,7 @@ import java.util.Stack;
 public class Maze {
 
 	static Stack<int[]> path = new Stack<>();
-	private static int[][] maze = {
+	static int[][] maze = {
 			{0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
 			{0, 1, 0, 0, 1, 1, 1, 1, 1, 0},
 			{0, 1, 0, 0, 1, 0, 0, 0, 1, 0},
@@ -22,14 +22,13 @@ public class Maze {
 	private static int startX, startY, endX, endY;
 
 	public static void main(String[] args) {
-		//MazeGUI mazeGUI = new MazeGUI();
-		//mazeGUI.setVisible(true);
+		MazeGUI mazeGUI = new MazeGUI();
+		mazeGUI.setVisible(true);
 
 		startX = 0;
 		startY = 1;
 		endX = 8;
 		endY = 9;
-
 		printMaze();
 		boolean solve = solveMaze(startX, startY);
 		System.out.println(solve);
