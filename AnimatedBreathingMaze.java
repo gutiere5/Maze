@@ -21,11 +21,11 @@ public class AnimatedBreathingMaze {
                     // Simulate the breathing effect by varying the brightness
                     for (int brightness = 0; brightness <= 255; brightness += 5) {
                         updateCells(brightness, maze);
-                        Thread.sleep(90); // Adjust the speed of the animation
+                        Thread.sleep(150); // Adjust the speed of the animation
                     }
                     for (int brightness = 255; brightness >= 0; brightness -= 5) {
                         updateCells(brightness, maze);
-                        Thread.sleep(90);
+                        Thread.sleep(150);
                     }
                 }
             } catch (InterruptedException e) {

@@ -12,7 +12,8 @@ public class Maze {
 	static Maze ms = new Maze(); // Create an instance of Maze
 
 	public static void main(String[] args) {
-		String fileName = "maze.txt"; // The file containing the maze structure
+		// Load default start up file 
+		String fileName = "maze.txt"; 
 
 		// Load the maze from the file
 		loadMaze(fileName);
