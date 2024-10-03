@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.io.File;
 import java.util.Stack;
 
 import javax.swing.BorderFactory;
@@ -122,12 +123,18 @@ public class MazeGUI extends JFrame{
 		}
 	}
 
-	private void importMaze() {
+	public void importMaze() {
 		importFile.showSaveDialog(null);
 		
 		if (importFile.getSelectedFile() != null) {
-			importFile.getSelectedFile().getAbsolutePath();
+			String path = importFile.getSelectedFile().getAbsolutePath();
+			Maze.loadMaze(path);
+			// Empty Stack first
+			Maze.emptyStack();
+			Maze.solveMaze(Maze.startX, Maze.startY);
+			displayMaze();
 		}
+		
 	}
 	
 }

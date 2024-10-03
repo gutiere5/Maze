@@ -8,10 +8,10 @@ import java.io.IOException;
 
 public class Maze {
 static Stack<int[]> path = new Stack<>();
-	private static int[][] maze;
+	public static int[][] maze;
     private static boolean[][] visited; // To track visited cells
     private static int rows, cols;
-    private static int startX, startY, endX, endY;
+    public static int startX, startY, endX, endY;
 	
 
 	public static void main(String[] args) {
@@ -19,13 +19,14 @@ static Stack<int[]> path = new Stack<>();
 		
 		String fileName = "maze.txt";
         
+		
         if (ms.loadMaze(fileName)) {
-            ms.printMaze();  // Print the loaded maze
+           // ms.printMaze();  // Print the loaded maze
             
             // Solve the maze
             if (solveMaze(startX, startY)) {
                 System.out.println("Solved Maze:");
-                ms.printMaze();
+              //  ms.printMaze();
             } else {
                 System.out.println("The maze could not be solved.");
             }
@@ -37,7 +38,7 @@ static Stack<int[]> path = new Stack<>();
 		mazeGUI.setVisible(true);
     }
 	 // Load the maze from the file
-    private boolean loadMaze(String fileName) {
+    public static boolean loadMaze(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
         	//reads the dimensions 
         	String[] dimensions = br.readLine().split(" ");
@@ -78,7 +79,9 @@ static Stack<int[]> path = new Stack<>();
 	
 	}
     //solve maze use DFS 
-	private static boolean solveMaze(int i, int j) {
+	public static boolean solveMaze(int i, int j) {
+		
+	
         // Boundary and base conditions
         if (i < 0 || i >= rows || j < 0 || j >= cols || maze[i][j] == 0 || visited[i][j]) {
             return false;
@@ -110,7 +113,17 @@ static Stack<int[]> path = new Stack<>();
 
 		return false;
 	}
+	
+	public static void emptyStack() {
 
+		if (!path.isEmpty()) {
+			while (!path.isEmpty()) {
+				path.pop();
+			}
+		}
+	}
+
+	/*
 	// Print the maze
 	private static void printMaze() {
 		for (int i = 0; i < 10; i++) {
@@ -145,6 +158,6 @@ static Stack<int[]> path = new Stack<>();
             System.out.println();
         }
     }
-
+*/
 }
 
