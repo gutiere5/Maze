@@ -1,163 +1,130 @@
 import java.util.Stack;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-
 public class Maze {
-static Stack<int[]> path = new Stack<>();
-	public static int[][] maze;
-    private static boolean[][] visited; // To track visited cells
-    private static int rows, cols;
-    public static int startX, startY, endX, endY;
-	
+	static Stack<int[]> path = new Stack<>(); // Stack to store the solution path
+	public static int[][] maze; // 2D array representing the maze structure
+	private static boolean[][] visited; // To track visited cells during the maze solving process
+	public static int rows, cols; // Number of rows and columns in the maze
+	public static int startX, startY, endX, endY; // Starting and ending coordinates in the maze
+	static Maze ms = new Maze(); // Create an instance of Maze
 
 	public static void main(String[] args) {
-		Maze ms = new Maze();
-		
-		String fileName = "maze.txt";
-        
-		
-        if (ms.loadMaze(fileName)) {
-           // ms.printMaze();  // Print the loaded maze
-            
-            // Solve the maze
-            if (solveMaze(startX, startY)) {
-                System.out.println("Solved Maze:");
-              //  ms.printMaze();
-            } else {
-                System.out.println("The maze could not be solved.");
-            }
-        } else {
-            System.out.println("Failed to load the maze.");
-        }
+		String fileName = "maze.txt"; // The file containing the maze structure
 
+		// Load the maze from the file
+		loadMaze(fileName);
+
+		// Create and display the MazeGUI interface
 		MazeGUI mazeGUI = new MazeGUI();
 		mazeGUI.setVisible(true);
-    }
-	 // Load the maze from the file
-    public static boolean loadMaze(String fileName) {
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-        	//reads the dimensions 
-        	String[] dimensions = br.readLine().split(" ");
-            rows = Integer.parseInt(dimensions[0]);
-            cols = Integer.parseInt(dimensions[1]);
-            
-            //visited  cells 
-            maze = new int[rows][cols];
-            visited = new boolean[rows][cols];
-            
-            //reads start point
-            String[] start = br.readLine().split(" ");
-            startX = Integer.parseInt(start[0]);
-            startY = Integer.parseInt(start[1]);
-            
-            
-           //reads end point
-            String[] end = br.readLine().split(" ");
-            endX = Integer.parseInt(end[0]);
-            endY = Integer.parseInt(end[1]);
-            
-            //read grid based on rows and columns 
-            for (int i = 0; i < rows; i++) {
-                String[] line = br.readLine().split(" ");
-          
-                for (int j = 0; j < cols; j++) {
-                	maze[i][j] = Integer.parseInt(line[j]);
-                }
-            }
-            return true;
-        } catch (IOException e) {
-            System.out.println("Error reading the maze file: " + e.getMessage());
-            return false;
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid maze format: " + e.getMessage());
-            return false;
-        }
-	
 	}
-    //solve maze use DFS 
-	public static boolean solveMaze(int i, int j) {
+
+	// Load the maze structure from the specified file
+	public static void loadMaze(String fileName) {
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			// Read the maze dimensions (rows and columns)
+			String[] dimensions = br.readLine().split(" ");
+			rows = Integer.parseInt(dimensions[0]);
+			cols = Integer.parseInt(dimensions[1]);
+
+			// Initialize the maze and visited arrays
+			maze = new int[rows][cols];
+			visited = new boolean[rows][cols];
+
+			// Read the starting point (startX, startY)
+			String[] start = br.readLine().split(" ");
+			startX = Integer.parseInt(start[0]);
+			startY = Integer.parseInt(start[1]);
+
+			// Read the ending point (endX, endY)
+			String[] end = br.readLine().split(" ");
+			endX = Integer.parseInt(end[0]);
+			endY = Integer.parseInt(end[1]);
+
+			// Read the maze grid, each cell represents a path (1) or wall (0)
+			for (int i = 0; i < rows; i++) {
+				String[] line = br.readLine().split(" ");
+				for (int j = 0; j < cols; j++) {
+					maze[i][j] = Integer.parseInt(line[j]);
+				}
+			}
+			
+			emptyStack();  	// Empty the stack before solving the maze
+			solveMaze(startX, startY); // Solve the maze from the start point
+						
+		} catch (IOException e) {
+			System.out.println("Error reading the maze file: " + e.getMessage());
+			
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid maze format: " + e.getMessage());
+		}
+
 		
-	
-        // Boundary and base conditions
-        if (i < 0 || i >= rows || j < 0 || j >= cols || maze[i][j] == 0 || visited[i][j]) {
-            return false;
-        }
+	}
+
+	// Solve the maze using Depth-First Search (DFS)
+	public static boolean solveMaze(int i, int j) {
+		// Boundary and base conditions:
+		// 1. Check if the current cell is out of bounds
+		// 2. Check if the cell is a wall (0) or already visited
+		if (i < 0 || i >= rows || j < 0 || j >= cols || maze[i][j] == 0 || visited[i][j]) {
+			return false; // Invalid move, return false
+		}
 
 		// Mark the current cell as visited
 		visited[i][j] = true;
-		
-		// Push the current cell onto the path stack
-		path.push(new int[] {i, j});
 
-		// Check if we have reached the end point
+		// Push the current cell onto the path stack
+		path.push(new int[] { i, j });
+
+		// Check if the current cell is the end point
 		if (i == endX && j == endY) {
-			maze[i][j] = 2;  // Mark the end point as part of the solution
-			return true;
+			maze[i][j] = 2; // Mark the end point as part of the solution
+			return true; // Maze is solved
 		}
 
 		// Mark the current cell as part of the solution path
 		maze[i][j] = 2;
 
-		//(down, up, right, left)
+		// Recursively explore the neighbors: down, up, right, left
 		if (solveMaze(i + 1, j) || solveMaze(i - 1, j) || solveMaze(i, j + 1) || solveMaze(i, j - 1)) {
-			return true;  // Return true if any path leads to the solution
+			return true; // Return true if any path leads to the solution
 		}
 
-		// Backtrack: Unmark the cell if no path is found
+		// Backtrack: unmark the current cell if no solution was found in this path
 		maze[i][j] = 1;
-		path.pop(); 
+		path.pop(); // Remove the cell from the solution path stack
 
-		return false;
+		return false; // No solution found in this path
 	}
-	
-	public static void emptyStack() {
 
-		if (!path.isEmpty()) {
-			while (!path.isEmpty()) {
-				path.pop();
-			}
+	// Empty the stack after solving or resetting the maze
+	public static void emptyStack() {
+		// Pop all elements from the stack to clear it
+		while (!path.isEmpty()) {
+			path.pop();
 		}
 	}
-
-	/*
 	// Print the maze
-	private static void printMaze() {
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				System.out.print(maze[i][j] + " ");
+	public static void printMaze() {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (i == startX && j == startY) {
+					System.out.print("S ");  // Mark start point as 'S'
+				} else if (i == endX && j == endY) {
+					System.out.print("E ");  // Mark end point as 'E'
+				} else if (maze[i][j] == 2) {
+					System.out.print("2 "); 
+				} else {
+					System.out.print(maze[i][j] + " ");
+				}
 			}
 			System.out.println();
 		}
 	}
-	
-	public static void printStackContents(Stack<int[]> path) {
-        System.out.println("Path contents:");
 
-
-        // Loop through each element (coordinate) in the stack
-        for (int[] coordinate : path) {
-            System.out.println("[" + coordinate[0] + ", " + coordinate[1] + "]");
-    // Print the maze
-    private static void printMaze() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-            	if (i == startX && j == startY) {
-                    System.out.print("S ");  // Mark start point as 'S'
-                } else if (i == endX && j == endY) {
-                    System.out.print("E ");  // Mark end point as 'E'
-                } else if (maze[i][j] == 2) {
-                    System.out.print("2 "); 
-                } else {
-                System.out.print(maze[i][j] + " ");
-                }
-            }
-            System.out.println();
-        }
-    }
-*/
 }
 
